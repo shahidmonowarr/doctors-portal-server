@@ -21,13 +21,12 @@ async function run() {
         console.log('database connected successfully');
         const database = client.db('doctors_portal');
         const appointmentsCollection = database.collection('appointments');
+        const userCollection = database.collection('users');
 
         app.get('/appointments', async (req, res) => {
             const email = req.query.email;
             const date = new Date(req.query.date).toLocaleDateString();
-            console.log(date);
             const query = { email: email, date: date };
-            console.log(query);
             const cursor = appointmentsCollection.find(query);
             const appointments = await cursor.toArray();
             res.json(appointments);
@@ -36,9 +35,17 @@ async function run() {
         app.post('/appointments', async (req, res) => {
             const appointment = req.body;
             const result = await appointmentsCollection.insertOne(appointment);
-            console.log(result);
+
             res.json({ result })
-        })
+        });
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user);
+            console.log(result);
+            res.json(result);
+        });
+
     } finally {
 
         // await client.close();
